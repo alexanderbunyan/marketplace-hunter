@@ -1,0 +1,26 @@
+services:
+  marketplace-api:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./auth.json:/app/auth.json
+      - ./data:/app/data
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - TZ=Australia/Sydney
+    ipc: host # Critical for Chromium shared memory
+    shm_size: '2gb' # Alternative/Backup method ensuring enough memory
+
+  frontend:
+    build: ./frontend_v2
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend_v2:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - marketplace-api

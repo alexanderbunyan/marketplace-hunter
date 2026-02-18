@@ -1,0 +1,20 @@
+
+--- ENTRY: 749be71b-cd95-43c8-bb79-9ecc3897791a ---
+DATA_DIR: C:\Users\Alex\Development Folder\marketplace-hunter\data
+
+--- DEBUG: Accessing 749be71b-cd95-43c8-bb79-9ecc3897791a ---
+DATA_DIR: C:\Users\Alex\Development Folder\marketplace-hunter\data
+Audit output_dir: /app/data/screenshots_Herman_Miller_20260216_180525
+Resolved output_dir: C:\Users\Alex\Development Folder\marketplace-hunter\data\screenshots_Herman_Miller_20260216_180525
+Verifying exists: C:\Users\Alex\Development Folder\marketplace-hunter\data\screenshots_Herman_Miller_20260216_180525\verified_steals.json
+Exists? True
+
+--- ENTRY: 749be71b-cd95-43c8-bb79-9ecc3897791a ---
+DATA_DIR: C:\Users\Alex\Development Folder\marketplace-hunter\data
+
+--- DEBUG: Accessing 749be71b-cd95-43c8-bb79-9ecc3897791a ---
+DATA_DIR: C:\Users\Alex\Development Folder\marketplace-hunter\data
+Audit output_dir: /app/data/screenshots_Herman_Miller_20260216_180525
+Resolved output_dir: C:\Users\Alex\Development Folder\marketplace-hunter\data\screenshots_Herman_Miller_20260216_180525
+Verifying exists: C:\Users\Alex\Development Folder\marketplace-hunter\data\screenshots_Herman_Miller_20260216_180525\verified_steals.json
+Exists? True
