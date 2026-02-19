@@ -15,6 +15,9 @@ export interface Deal {
     deal_rating?: number;
     flipper_comment?: string;
     estimated_new_price?: number;
+    visual_brand_model?: string;
+    visual_condition?: string;
+    visual_tier?: string;
     ai_analysis?: {
         is_steal: boolean;
         reason: string;
@@ -49,6 +52,7 @@ export interface Job {
     status: 'running' | 'complete' | 'failed';
     query?: string;
     location?: string;
+    source?: string;
 }
 
 // Scans
@@ -93,6 +97,7 @@ export interface Schedule {
     min_listings: number;
     user_intent: string;
     frequency: 'daily' | 'weekly';
+    time: string;
     email_to: string;
     active: boolean;
     last_run?: string;

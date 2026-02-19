@@ -101,6 +101,7 @@ class ScanRequest(BaseModel):
     radius: int = 10
     min_listings: int = 30
     user_intent: str = None
+    source: str = "manual"
 
 def run_scraper_pipeline(request: ScanRequest, scan_id: str):
     """
@@ -114,7 +115,8 @@ def run_scraper_pipeline(request: ScanRequest, scan_id: str):
         location=request.location,
         radius=request.radius,
         min_listings=request.min_listings,
-        user_intent=request.user_intent
+        user_intent=request.user_intent,
+        source=request.source
     )
     monitor.start_step("pipeline_wall_clock")
     
@@ -156,6 +158,7 @@ def run_scraper_pipeline(request: ScanRequest, scan_id: str):
             "--radius", str(request.radius),
             "--min-listings", str(request.min_listings),
             "--scan-id", scan_id,
+            "--source", request.source,
             "--auth-file", AUTH_FILE,
             "--data-dir", DATA_DIR,
             "--headless"
@@ -397,7 +400,8 @@ def list_jobs():
                                 "end_time": data.get("end_time"),
                                 "status": "complete" if data.get("end_time") else "running",
                                 "query": data.get("query") or "Unknown",
-                                "location": data.get("location") or "Unknown"
+                                "location": data.get("location") or "Unknown",
+                                "source": data.get("source") or "manual"
                             })
                     except:
                         pass
@@ -415,6 +419,23 @@ def list_jobs():
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+@app.get("/scheduler/debug")
+def scheduler_debug():
+    from scheduler import scheduler
+    import datetime
+    jobs = []
+    for j in scheduler.get_jobs():
+        jobs.append({
+            "id": j.id,
+            "next_run_time": str(j.next_run_time),
+            "trigger": str(j.trigger)
+        })
+    return {
+        "server_time": str(datetime.datetime.now()),
+        "jobs": jobs,
+        "scheduler_running": scheduler.running
+    }
 
 # ----------------- SCHEDULER & SETTINGS -----------------
 from pydantic import BaseModel
@@ -434,6 +455,7 @@ class ScheduleModel(BaseModel):
     min_listings: int = 10
     user_intent: str = ""
     frequency: str = "daily" # daily, weekly
+    time: str = "09:00" # HH:MM 24h format
     email_to: str = ""
     active: bool = True
 
@@ -491,8 +513,9 @@ def trigger_schedule(schedule_id: str, background_tasks: BackgroundTasks):
     if not target:
         raise HTTPException(status_code=404, detail="Schedule not found")
         
-    background_tasks.add_task(run_scheduled_scan, target)
-    return {"status": "Triggered manual run"}
+    scan_id = str(uuid.uuid4())
+    background_tasks.add_task(run_scheduled_scan, target, source="manual_scheduled", scan_id=scan_id)
+    return {"status": "Triggered manual run", "scan_id": scan_id}
 
 @app.get("/settings")
 def get_settings():

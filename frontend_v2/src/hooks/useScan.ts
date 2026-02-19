@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { startScan, getScanStatus, getScanLog, getJobs, deleteJob } from '../api';
+import { startScan, getScanStatus, getScanLog, getJobs, deleteJob, runSchedule } from '../api';
 
 export const useScanStatus = (scanId: string | null) => {
     return useQuery({
@@ -51,5 +51,14 @@ export const useDeleteJob = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['jobs'] });
         }
+    });
+};
+export const useRunSchedule = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: runSchedule,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['jobs'] });
+        },
     });
 };

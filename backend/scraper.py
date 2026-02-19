@@ -20,7 +20,7 @@ async def run(args):
     
     monitor = None
     if args.scan_id:
-        monitor = ScanMonitor(args.scan_id, data_dir=data_dir)
+        monitor = ScanMonitor(args.scan_id, data_dir=data_dir, source=args.source)
         monitor.start_step("scraper")
     
     if user_data_dir and not os.path.exists(user_data_dir):
@@ -330,6 +330,7 @@ if __name__ == "__main__":
     parser.add_argument("--auth-file", help="Path to auth.json file for session storage (alternative to user-data-dir)")
     parser.add_argument("--data-dir", default="data", help="Directory to save data (default: data/)")
     parser.add_argument("--scan-id", help="Scan ID for audit logging")
+    parser.add_argument("--source", default="manual", help="Source of the scan (manual, scheduled)")
     
     args = parser.parse_args()
     

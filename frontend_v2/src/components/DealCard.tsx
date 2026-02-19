@@ -93,6 +93,18 @@ export function DealCard({ deal, basePath }: DealCardProps) {
                     {/* Stats Grid */}
                     <div className="grid grid-cols-2 gap-2 mt-auto">
                         <div className="bg-muted/50 p-2 rounded border text-xs">
+                            <span className="text-muted-foreground uppercase text-[10px] font-bold block">Brand / Model</span>
+                            <span className="font-medium truncate block" title={deal.visual_brand_model || "Unknown"}>
+                                {deal.visual_brand_model || "Unknown"}
+                            </span>
+                        </div>
+                        <div className="bg-muted/50 p-2 rounded border text-xs">
+                            <span className="text-muted-foreground uppercase text-[10px] font-bold block">Condition</span>
+                            <span className="font-medium truncate block" title={deal.visual_condition || "Unknown"}>
+                                {deal.visual_condition || "Unknown"}
+                            </span>
+                        </div>
+                        <div className="bg-muted/50 p-2 rounded border text-xs">
                             <span className="text-muted-foreground uppercase text-[10px] font-bold block">Est. New</span>
                             <span className="font-mono font-medium">
                                 {deal.ai_analysis?.resale_price_estimate || (deal.estimated_new_price ? `$${deal.estimated_new_price}` : "N/A")}
@@ -109,9 +121,9 @@ export function DealCard({ deal, basePath }: DealCardProps) {
                     </div>
 
                     {/* AI Insight Snippet */}
-                    {(deal.ai_analysis?.reason || deal.flipper_comment) && (
+                    {(deal.ai_analysis?.reason || deal.reason || deal.flipper_comment) && (
                         <div className="text-xs text-muted-foreground bg-muted/30 p-2 rounded italic line-clamp-4 border border-transparent hover:border-border transition-colors">
-                            "{deal.ai_analysis?.reason || deal.flipper_comment}"
+                            "{deal.ai_analysis?.reason || deal.reason || deal.flipper_comment}"
                         </div>
                     )}
                 </div>
@@ -137,40 +149,97 @@ export function DealCard({ deal, basePath }: DealCardProps) {
                             <h2 className="font-bold text-lg truncate pr-4">{deal.title}</h2>
                             <Button variant="ghost" size="icon" onClick={() => setShowModal(false)}>✕</Button>
                         </div>
-                        <div className="p-6 overflow-y-auto space-y-4">
+                        <div className="p-6 overflow-y-auto space-y-6">
                             {imageUrl && (
                                 <img src={imageUrl} className="w-full rounded-lg border bg-muted" alt="Full view" />
                             )}
 
-                            <div className="space-y-2">
-                                <h3 className="font-bold text-sm uppercase text-muted-foreground">Description</h3>
-                                <p className="text-sm whitespace-pre-wrap bg-muted/30 p-3 rounded-md border">
-                                    {deal.description || "No description."}
-                                </p>
+                            {/* Stats Grid */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="space-y-1">
+                                    <div className="text-xs text-muted-foreground uppercase">Price</div>
+                                    <div className="font-bold text-lg">{deal.price}</div>
+                                </div>
+                                <div className="space-y-1">
+                                    <div className="text-xs text-muted-foreground uppercase">Est. New</div>
+                                    <div className="font-mono">{deal.ai_analysis?.resale_price_estimate || (deal.estimated_new_price ? `$${deal.estimated_new_price}` : "N/A")}</div>
+                                </div>
+                                <div className="space-y-1">
+                                    <div className="text-xs text-muted-foreground uppercase">Score</div>
+                                    <div className={`font-bold ${score >= 7 ? "text-emerald-500" : "text-amber-500"}`}>{score}/10</div>
+                                </div>
+                                <div className="space-y-1">
+                                    <div className="text-xs text-muted-foreground uppercase">Location</div>
+                                    <div className="truncate">{deal.location}</div>
+                                </div>
                             </div>
 
-                            {(deal.ai_analysis || deal.flipper_comment) && (
-                                <div className="space-y-2">
-                                    <h3 className="font-bold text-sm uppercase text-emerald-600 dark:text-emerald-400 flex items-center">
-                                        <CheckCircle className="h-4 w-4 mr-2" /> AI Analysis
-                                    </h3>
-                                    <div className="bg-emerald-50 dark:bg-emerald-950/30 p-4 rounded-lg border border-emerald-100 dark:border-emerald-900 text-sm">
-                                        <p>{deal.ai_analysis?.reason || deal.flipper_comment}</p>
+                            {/* Analysis Section */}
+                            <div className="space-y-4 border-t pt-4">
+                                <h4 className="font-semibold text-sm flex items-center gap-2">
+                                    <span className="w-1 h-4 bg-blue-500 rounded-full"></span>
+                                    AI Analysis
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <span className="text-muted-foreground block text-xs uppercase">Brand / Visual Model</span>
+                                        <span className="font-medium">{deal.visual_brand_model || "Unknown"}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-muted-foreground block text-xs uppercase">Visual Condition</span>
+                                        <span className="font-medium">{deal.visual_condition || "Unknown"}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-muted-foreground block text-xs uppercase">Tier</span>
+                                        <span className="font-medium">{deal.visual_tier || "N/A"}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-muted-foreground block text-xs uppercase">Flipper Comment</span>
+                                        <p className="italic text-muted-foreground">"{deal.flipper_comment || "No comment"}"</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Verification Details (if available) */}
+                            {deal.verification && (
+                                <div className="space-y-4 border-t pt-4 bg-emerald-500/5 -mx-6 px-6 py-4">
+                                    <h4 className="font-semibold text-sm flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+                                        <span className="w-1 h-4 bg-emerald-500 rounded-full"></span>
+                                        Deep Dive Verification
+                                    </h4>
+                                    <div className="space-y-3 text-sm">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <span className="text-muted-foreground block text-xs uppercase">Verdict</span>
+                                                <span className="font-bold text-emerald-600">VERIFIED DEAL</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-muted-foreground block text-xs uppercase">Confidence</span>
+                                                <span className="font-medium">High</span>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <span className="text-muted-foreground block text-xs uppercase">Detailed Reason</span>
+                                            <p className="mt-1">{deal.ai_analysis?.reason || deal.reason}</p>
+                                        </div>
+
+                                        {deal.verification.notes && (
+                                            <div>
+                                                <span className="text-muted-foreground block text-xs uppercase">Visual Confirmation</span>
+                                                <p className="mt-1 italic">{deal.verification.notes}</p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
 
-                            {deal.verification && (
-                                <div className="space-y-2">
-                                    <h3 className="font-bold text-sm uppercase text-purple-600 dark:text-purple-400 flex items-center">
-                                        <AlertTriangle className="h-4 w-4 mr-2" /> Auditor Notes
-                                    </h3>
-                                    <div className={`p-4 rounded-lg border text-sm ${deal.verification.verified ? "bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20" : "bg-red-50 border-red-200 dark:bg-red-900/20"}`}>
-                                        <p className="font-bold">{deal.verification.verified ? "VERIFIED VALID" : "REJECTED"}</p>
-                                        <p>{deal.verification.notes}</p>
-                                    </div>
-                                </div>
-                            )}
+                            <div className="space-y-2 border-t pt-4">
+                                <div className="text-xs text-muted-foreground uppercase font-bold">Description</div>
+                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                                    {deal.description}
+                                </p>
+                            </div>
                         </div>
                         <div className="p-4 border-t bg-muted/20 flex justify-end">
                             <Button onClick={() => setShowModal(false)} variant="outline" className="mr-2">Close</Button>

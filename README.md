@@ -21,6 +21,8 @@ Marketplace Hunter is a "set and forget" tool designed for resellers and bargain
 -   **Autonomous Pipeline**: Scraper -> Visual Analysis -> Deal Ranking -> Deep Dive Verification.
 -   **AI-Powered Valuation**: Uses LLMs to estimate fair market value and resell potential.
 -   **Live Mission Control**: React-based dashboard with real-time logs, cost tracking, and deal feeds.
+-   **Automated Scheduling**: Set up daily or weekly scans for specific items and locations.
+-   **Smart Alerts**: Receive rich HTML email reports with images, AI analysis, and verification scores.
 -   **Fraud Detection**: "Deep Dive" mode browses listings like a human to catch description inconsistencies.
 -   **Dockerized**: Run the entire stack with a single command.
 
@@ -31,10 +33,13 @@ Marketplace Hunter is a "set and forget" tool designed for resellers and bargain
 -   `analyze_images.py`: Google Gemini 1.5 Flash integration for visual inspection.
 -   `rank_deals.py`: Logic engine to prioritize high-margin items.
 -   `deep_dive.py`: Secondary verification step for top-ranked items.
+-   `scheduler.py`: Background job manager (APScheduler) for persistent cron-like tasks.
+-   `email_service.py`: Rich HTML email generator for deal reports.
 -   `main.py`: FastAPI orchestrator and API endpoints.
 
 ### Frontend (React/Vite)
 -   **Mission Control**: Real-time status, token usage, and cost monitoring.
+-   **Schedules & Alerts**: Manage automated searches and email notifications.
 -   **Market Analysis**: Horizontal carousel of all scanned items with AI commentary.
 -   **Verified Top Picks**: Dedicated section for high-confidence "Steals".
 -   **System Logs**: Live terminal feed of the backend process.

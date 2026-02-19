@@ -5,7 +5,7 @@ from pathlib import Path
 from datetime import datetime
 
 class ScanMonitor:
-    def __init__(self, scan_id, data_dir="data", query=None, location=None, radius=None, min_listings=None, user_intent=None):
+    def __init__(self, scan_id, data_dir="data", query=None, location=None, radius=None, min_listings=None, user_intent=None, source="manual"):
         self.scan_id = scan_id
         self.data_dir = Path(data_dir)
         # Reorganized structure: data/jobs/{scan_id}/
@@ -20,6 +20,7 @@ class ScanMonitor:
         
         self.data = {
             "scan_id": scan_id,
+            "source": source,
             "query": query,
             "location": location,
             "radius": radius,
