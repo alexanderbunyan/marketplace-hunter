@@ -16,6 +16,19 @@ Marketplace Hunter is a "set and forget" tool designed for resellers and bargain
 4.  **Deep Dives** into promising listings to verify details and detect scams.
 5.  **Alerts** you to "Verified Steals" via a live dashboard.
 
+## 🎥 See it in Action
+
+### 1. Autonomous Hunting & AI Valuation
+Watch the agent process a manual search, scrape listings, analyze images using Gemini, and populate the live dashboard with ranked recommendations:
+
+<video src="https://github.com/user-attachments/assets/993dfd6a-78ea-46e0-8ca5-1f56d1976dd5" width="100%" controls></video>
+
+
+### 2. Scheduled Scans & Smart Alerts
+See how to configure persistent background schedules and view the rich HTML email alerts generated when a "Verified Steal" is found:
+
+<video src="https://github.com/user-attachments/assets/950e9c0c-e401-4e74-9abe-8528914ee591" width="100%" controls></video>
+
 ## ✨ Features
 
 -   **Autonomous Pipeline**: Scraper -> Visual Analysis -> Deal Ranking -> Deep Dive Verification.
@@ -54,7 +67,7 @@ Marketplace Hunter is a "set and forget" tool designed for resellers and bargain
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/alexanderbunyan/marketplace-hunter.git
+    git clone [https://github.com/alexanderbunyan/marketplace-hunter.git](https://github.com/alexanderbunyan/marketplace-hunter.git)
     cd marketplace-hunter
     ```
 
