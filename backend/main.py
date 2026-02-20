@@ -437,6 +437,55 @@ def scheduler_debug():
         "scheduler_running": scheduler.running
     }
 
+@app.post("/debug/send-test-email")
+def debug_send_email(email: str = None):
+    from email_service import format_deal_email, send_email, load_settings
+    import json
+    import os
+    
+    # Logic to find latest scan with results
+    data_dir = DATA_DIR
+    screenshot_dirs = sorted(
+        [d for d in data_dir.iterdir() if d.is_dir() and d.name.startswith("screenshots_")],
+        key=os.path.getmtime,
+        reverse=True
+    )
+    
+    if not screenshot_dirs:
+        return {"error": "No scan data found to test with."}
+        
+    latest_dir = screenshot_dirs[0]
+    results_file = latest_dir / "verified_steals.json"
+    if not results_file.exists():
+         results_file = latest_dir / "ranked_deals.json"
+         
+    if not results_file.exists():
+        return {"error": "No results found in latest scan.", "path": str(latest_dir)}
+        
+    with open(results_file, "r") as f:
+        data = json.load(f)
+        deals = data.get("verified", []) if isinstance(data, dict) else data
+        
+    if not deals:
+        return {"error": "Latest scan has no deals."}
+        
+    settings = load_settings()
+    dest_email = email or settings.get("default_email")
+    
+    if not dest_email:
+        return {"error": "No email provided and no default email setting found."}
+        
+    email_body, attachments = format_deal_email(deals, "TEST EMAIL from Debugger", latest_dir)
+    success = send_email(dest_email, "Marketplace Hunter: TEST EMAIL", email_body, attachments)
+    
+    return {
+        "success": success,
+        "email_to": dest_email,
+        "deals_count": len(deals),
+        "attachments_count": len(attachments),
+        "source_dir": str(latest_dir)
+    }
+
 # ----------------- SCHEDULER & SETTINGS -----------------
 from pydantic import BaseModel
 from scheduler import (

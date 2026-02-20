@@ -22,7 +22,7 @@ def load_settings():
             return {}
     return {}
 
-def send_email(to_email: str, subject: str, html_content: str):
+def send_email(to_email: str, subject: str, html_content: str, attachments: list = None):
     settings = load_settings()
     
     # Priority: Env Vars > Settings.json
@@ -36,11 +36,31 @@ def send_email(to_email: str, subject: str, html_content: str):
         return False
 
     try:
-        msg = MIMEMultipart()
+        msg = MIMEMultipart('related') # 'related' is important for inline images
         msg['From'] = smtp_user
         msg['To'] = to_email
         msg['Subject'] = subject
-        msg.attach(MIMEText(html_content, 'html'))
+        
+        msg_alternative = MIMEMultipart('alternative')
+        msg.attach(msg_alternative)
+        
+        msg_alternative.attach(MIMEText(html_content, 'html'))
+        
+        if attachments:
+            from email.mime.image import MIMEImage
+            for file_path in attachments:
+                try:
+                    fp = Path(file_path)
+                    if fp.exists():
+                        with open(fp, 'rb') as f:
+                            img_data = f.read()
+                        image = MIMEImage(img_data)
+                        # Define the image ID as the filename
+                        image.add_header('Content-ID', f"<{fp.name}>")
+                        image.add_header('Content-Disposition', 'inline', filename=fp.name)
+                        msg.attach(image)
+                except Exception as e:
+                    print(f"Failed to attach image {file_path}: {e}")
 
         server = smtplib.SMTP(smtp_server, int(smtp_port))
         server.starttls()
@@ -54,10 +74,13 @@ def send_email(to_email: str, subject: str, html_content: str):
         print(f"Failed to send email: {e}")
         return False
 
-def format_deal_email(scan_results, query):
+def format_deal_email(scan_results, query, image_base_path=None):
     """
     Formats a list of deals into an HTML email body with rich details.
+    Returns (html_content, list_of_attachments)
     """
+    attachments = []
+    
     html = f"""
     <html>
     <head>
@@ -97,12 +120,20 @@ def format_deal_email(scan_results, query):
             title = deal.get('title', 'Unknown Item')
             price = deal.get('price', 'N/A')
             url = deal.get('url', '#')
-            image_url = deal.get('image_url') or "" 
-            # If image_url is missing or local, we might skip it or show placeholder
-            if not image_url.startswith('http'):
-                image_src = "https://placehold.co/150x150?text=No+Image"
-            else:
-                image_src = image_url
+            
+            # Image Logic
+            image_src = "https://placehold.co/150x150?text=No+Image"
+            screenshot = deal.get('screenshot')
+            
+            # If we have a local screenshot and a base path
+            if screenshot and image_base_path:
+                local_path = Path(image_base_path) / screenshot
+                if local_path.exists():
+                    image_src = f"cid:{screenshot}"
+                    attachments.append(local_path)
+            # Fallback to remote URL if no local screenshot but we have a URL (unlikely given current scraper)
+            elif deal.get('image_url') and deal.get('image_url').startswith('http'):
+                 image_src = deal.get('image_url')
 
             brand = deal.get('visual_brand_model', 'Unknown')
             condition = deal.get('visual_condition', 'Unknown')
@@ -147,4 +178,4 @@ def format_deal_email(scan_results, query):
     </body>
     </html>
     """
-    return html
+    return html, attachments

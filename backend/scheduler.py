@@ -203,8 +203,11 @@ def run_scheduled_scan(schedule, source="scheduled", scan_id=None):
         
         if dest_email and deals:
              monitor.log_process(f"Sending email to {dest_email}...")
-             email_body = format_deal_email(deals, schedule['query'])
-             send_email(dest_email, f"Marketplace Hunter: {schedule['query']} Results", email_body)
+             email_body, attachments = format_deal_email(deals, schedule['query'], latest_dir)
+             if send_email(dest_email, f"Marketplace Hunter: {schedule['query']} Results", email_body, attachments):
+                 monitor.log_process("Email sent successfully.")
+             else:
+                 monitor.log_process("ERROR: Failed to send email. Check container logs for details.")
              
         monitor.log_process("Pipeline Completed Successfully.")
 

@@ -7,6 +7,8 @@ services:
       - ./backend:/app
       - ./auth.json:/app/auth.json
       - ./data:/app/data
+    env_file:
+      - .env
     environment:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - TZ=Australia/Sydney
